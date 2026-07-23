@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Somaia Salah | Computer Science Student</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E141F;
+    --panel:#161E2C;
+    --panel-2:#1B2436;
+    --line:#2B3A50;
+    --cyan:#5FC9D8;
+    --amber:#E7A94C;
+    --text:#E8EBF1;
+    --muted:#8996AB;
+    --radius:10px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--cyan);color:var(--ink);}
+
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .display{font-family:'Space Grotesk',sans-serif;}
+
+  a{color:inherit;text-decoration:none;}
+
+  /* faint ER-diagram grid backdrop */
+  .grid-bg{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:48px 48px;
+    opacity:0.12;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 20%, black 40%, transparent 100%);
+  }
+
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 6vw;
+    background:rgba(14,20,31,0.85);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .logo{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:0.5px;}
+  .logo .tag{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink);
+    background:var(--cyan);padding:3px 6px;border-radius:4px;font-weight:600;
+  }
+  nav{display:flex;gap:28px;font-size:14px;}
+  nav a{color:var(--muted);position:relative;transition:color .2s;}
+  nav a::before{content:'-- ';color:var(--line);font-family:'JetBrains Mono',monospace;}
+  nav a:hover{color:var(--text);}
+  .nav-toggle{display:none;background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;}
+
+  section{position:relative;z-index:1;padding:120px 6vw 90px;max-width:1100px;margin:0 auto;}
+
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--cyan);
+    letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:'//';color:var(--line);}
+
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600;}
+
+  /* ---------- HERO ---------- */
+  #hero{
+    min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+    padding-top:80px;
+  }
+  .query-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 24px;max-width:640px;margin-bottom:34px;
+    box-shadow:0 20px 60px -30px rgba(0,0,0,0.6);
+  }
+  .query-card .dots{display:flex;gap:6px;margin-bottom:14px;}
+  .query-card .dots span{width:9px;height:9px;border-radius:50%;background:var(--line);}
+  .query-line{font-family:'JetBrains Mono',monospace;font-size:14.5px;color:#B9E4EC;white-space:pre-wrap;}
+  .query-line .kw{color:var(--amber);}
+  .query-line .str{color:#9FE3B0;}
+  .cursor{display:inline-block;width:8px;height:16px;background:var(--cyan);margin-left:2px;vertical-align:-3px;animation:blink 1s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  .hero-name{font-size:clamp(38px,6.2vw,72px);line-height:1.05;margin-bottom:14px;}
+  .hero-name .accent{color:var(--cyan);}
+  .hero-role{font-size:clamp(16px,2vw,20px);color:var(--muted);margin-bottom:28px;max-width:620px;}
+  .hero-cta{display:flex;gap:16px;flex-wrap:wrap;}
+  .btn{
+    font-family:'JetBrains Mono',monospace;font-size:13.5px;padding:12px 20px;border-radius:7px;
+    border:1px solid var(--line);transition:all .2s;display:inline-flex;align-items:center;gap:8px;
+  }
+  .btn-primary{background:var(--cyan);color:var(--ink);border-color:var(--cyan);font-weight:600;}
+  .btn-primary:hover{background:#78d6e3;}
+  .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);}
+
+  .hero-meta{
+    margin-top:56px;display:flex;gap:40px;flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);
+  }
+  .hero-meta b{color:var(--text);display:block;font-size:20px;font-family:'Space Grotesk',sans-serif;}
+
+  /* ---------- ABOUT ---------- */
+  .schema-block{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .schema-head{
+    padding:14px 22px;border-bottom:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);
+    display:flex;justify-content:space-between;
+  }
+  .schema-row{
+    display:grid;grid-template-columns:180px 1fr;gap:20px;
+    padding:16px 22px;border-bottom:1px solid var(--line);font-size:14.5px;
+  }
+  .schema-row:last-child{border-bottom:none;}
+  .schema-key{font-family:'JetBrains Mono',monospace;color:var(--amber);font-size:13.5px;}
+  .schema-val{color:var(--text);}
+  .schema-val .muted{color:var(--muted);}
+
+  /* ---------- SKILLS ---------- */
+  .skills-table{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  .skills-table-head{
+    display:grid;grid-template-columns:180px 1fr;
+    padding:12px 22px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);
+    border-bottom:1px solid var(--line);letter-spacing:0.5px;text-transform:uppercase;
+  }
+  .skills-table-row{
+    display:grid;grid-template-columns:180px 1fr;gap:16px;
+    padding:18px 22px;border-bottom:1px solid var(--line);align-items:center;
+  }
+  .skills-table-row:last-child{border-bottom:none;}
+  .skills-table-row:hover{background:var(--panel-2);}
+  .skills-cat{font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--cyan);}
+  .pill-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .pill{
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;padding:6px 12px;border-radius:6px;
+    background:var(--panel-2);border:1px solid var(--line);color:var(--text);
+  }
+
+  /* ---------- PROJECTS ---------- */
+  .projects-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;}
+  .entity-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    position:relative;transition:border-color .2s, transform .2s;
+  }
+  .entity-card:hover{border-color:var(--cyan);transform:translateY(-3px);}
+  .entity-head{
+    padding:16px 20px;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between;align-items:baseline;
+  }
+  .entity-title{font-size:18px;}
+  .entity-tools{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted);margin-top:4px;}
+  .pk-badge{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink);background:var(--amber);
+    padding:2px 7px;border-radius:4px;font-weight:600;letter-spacing:0.5px;white-space:nowrap;
+  }
+  .entity-body{padding:18px 20px;}
+  .entity-body li{
+    list-style:none;font-size:13.8px;color:var(--muted);position:relative;padding-left:18px;margin-bottom:10px;
+  }
+  .entity-body li::before{
+    content:'';position:absolute;left:0;top:8px;width:6px;height:6px;background:var(--cyan);border-radius:50%;
+  }
+  .entity-body li:last-child{margin-bottom:0;}
+
+  /* ---------- EDUCATION + LANGUAGES ---------- */
+  .two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:26px;}
+  @media (max-width:760px){.two-col{grid-template-columns:1fr;}}
+
+  .lang-row{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;border-bottom:1px solid var(--line);}
+  .lang-row:last-child{border-bottom:none;}
+  .lang-name{font-size:14.5px;}
+  .lang-bar-wrap{width:120px;height:6px;background:var(--panel-2);border-radius:3px;overflow:hidden;}
+  .lang-bar{height:100%;background:var(--cyan);}
+
+  /* ---------- CONTACT ---------- */
+  #contact .schema-block{padding:6px 0;}
+  .contact-links{display:flex;flex-wrap:wrap;gap:14px;margin-top:24px;}
+
+  footer{
+    position:relative;z-index:1;text-align:center;padding:34px 6vw 40px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);
+    border-top:1px solid var(--line);
+  }
+
+  /* scroll reveal */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  @media (max-width:760px){
+    nav{
+      position:fixed;top:64px;right:0;left:0;background:var(--ink);
+      flex-direction:column;padding:20px 6vw;border-bottom:1px solid var(--line);
+      transform:translateY(-140%);transition:transform .25s ease;gap:16px;
+    }
+    nav.open{transform:translateY(0);}
+    .nav-toggle{display:block;}
+    .projects-grid{grid-template-columns:1fr;}
+    .schema-row{grid-template-columns:1fr;gap:4px;}
+    .skills-table-row{grid-template-columns:1fr;gap:8px;}
+    .skills-table-head{display:none;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    .reveal{transition:none;opacity:1;transform:none;}
+    .cursor{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<header>
+  <div class="logo"><span class="tag">SS</span> Somaia Salah</div>
+  <nav id="nav">
+    <a href="#hero">home</a>
+    <a href="#about">about</a>
+    <a href="#skills">skills</a>
+    <a href="#projects">projects</a>
+    <a href="#contact">contact</a>
+  </nav>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+</header>
+
+<section id="hero">
+  <div class="query-card">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="query-line mono" id="typedQuery"></div>
+  </div>
+
+  <h1 class="hero-name display">Somaia Salah <span class="accent">Abdelazim</span></h1>
+  <p class="hero-role">Computer Science student focused on relational database design, object‑oriented programming, and turning data models into working systems — from ER diagrams to functioning GUIs.</p>
+
+  <div class="hero-cta">
+    <a href="#projects" class="btn btn-primary">View Projects</a>
+    <a href="#contact" class="btn btn-ghost">Get In Touch</a>
+  </div>
+
+  <div class="hero-meta">
+    <div><b>2</b>Projects Shipped</div>
+    <div><b>4</b>Languages &amp; Tools</div>
+    <div><b>2029</b>Expected Graduation</div>
+  </div>
+</section>
+
+<section id="about" class="reveal">
+  <div class="eyebrow">about</div>
+  <h2 style="font-size:clamp(24px,3vw,32px);margin-bottom:24px;">SELECT * FROM student</h2>
+
+  <div class="schema-block">
+    <div class="schema-head">
+      <span>students</span>
+      <span>1 row returned</span>
+    </div>
+    <div class="schema-row">
+      <div class="schema-key">university</div>
+      <div class="schema-val">Modern Academy for Computer Science <span class="muted">— Cairo, Egypt</span></div>
+    </div>
+    <div class="schema-row">
+      <div class="schema-key">program</div>
+      <div class="schema-val">B.Sc. in Computer Science <span class="muted">(Oct 2025 – June 2029, expected)</span></div>
+    </div>
+    <div class="schema-row">
+      <div class="schema-key">focus</div>
+      <div class="schema-val">Relational database design, object‑oriented programming, software engineering fundamentals</div>
+    </div>
+    <div class="schema-row">
+      <div class="schema-key">summary</div>
+      <div class="schema-val">Motivated CS student who enjoys taking a problem from a raw data model — an ER diagram or a UML class diagram — all the way to a working application with a clean, usable interface. Comfortable across SQL, Java, C++, and Python.</div>
+    </div>
+  </div>
+</section>
+
+<section id="skills" class="reveal">
+  <div class="eyebrow">skills</div>
+  <h2 style="font-size:clamp(24px,3vw,32px);margin-bottom:24px;">Technical Arsenal</h2>
+
+  <div class="skills-table">
+    <div class="skills-table-head"><span>column</span><span>values</span></div>
+
+    <div class="skills-table-row">
+      <div class="skills-cat">languages</div>
+      <div class="pill-row">
+        <span class="pill">SQL</span><span class="pill">C++</span><span class="pill">Python</span>
+      </div>
+    </div>
+    <div class="skills-table-row">
+      <div class="skills-cat">concepts</div>
+      <div class="pill-row">
+        <span class="pill">Object-Oriented Programming (OOP)</span>
+      </div>
+    </div>
+    <div class="skills-table-row">
+      <div class="skills-cat">tools</div>
+      <div class="pill-row">
+        <span class="pill">VS Code</span><span class="pill">SQL Server</span><span class="pill">Apache NetBeans</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects" class="reveal">
+  <div class="eyebrow">projects</div>
+  <h2 style="font-size:clamp(24px,3vw,32px);margin-bottom:24px;">Featured Entities</h2>
+
+  <div class="projects-grid">
+    <div class="entity-card">
+      <div class="entity-head">
+        <div>
+          <div class="entity-title display">Olympics Database System</div>
+          <div class="entity-tools">Microsoft Access</div>
+        </div>
+        <span class="pk-badge">PK: project_id</span>
+      </div>
+      <div class="entity-body">
+        <ul>
+          <li>Relational database tracking athletes, sports, events, cities, and medal results.</li>
+          <li>Complex ER model handling many-to-many relationships across multiple entities.</li>
+          <li>Normalized tables, user-friendly data entry forms, and queries for analysis.</li>
+          <li>Automated reports for structured insight into system data.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <div class="entity-head">
+        <div>
+          <div class="entity-title display">E-Book Bookstore System</div>
+          <div class="entity-tools">Java (OOP) · SQL Server</div>
+        </div>
+        <span class="pk-badge">PK: project_id</span>
+      </div>
+      <div class="entity-body">
+        <ul>
+          <li>Database-backed bookstore system built with Object-Oriented Programming principles.</li>
+          <li>ER diagrams and referential constraints modeling the data structure.</li>
+          <li>Full UML documentation: Use Case, Activity, Sequence, and Class diagrams.</li>
+          <li>GUI supporting full CRUD operations with event handling.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="education" class="reveal">
+  <div class="eyebrow">education &amp; languages</div>
+  <div class="two-col">
+    <div class="schema-block">
+      <div class="schema-head"><span>education</span><span>1 row</span></div>
+      <div class="schema-row">
+        <div class="schema-key">degree</div>
+        <div class="schema-val">B.Sc. Computer Science</div>
+      </div>
+      <div class="schema-row">
+        <div class="schema-key">institution</div>
+        <div class="schema-val">Modern Academy for Computer Science</div>
+      </div>
+      <div class="schema-row">
+        <div class="schema-key">timeline</div>
+        <div class="schema-val muted">Oct 2025 – June 2029 (Expected)</div>
+      </div>
+    </div>
+
+    <div class="schema-block">
+      <div class="schema-head"><span>languages</span><span>3 rows</span></div>
+      <div class="lang-row"><span class="lang-name">Arabic</span><div class="lang-bar-wrap"><div class="lang-bar" style="width:100%"></div></div></div>
+      <div class="lang-row"><span class="lang-name">English</span><div class="lang-bar-wrap"><div class="lang-bar" style="width:70%"></div></div></div>
+      <div class="lang-row"><span class="lang-name">French</span><div class="lang-bar-wrap"><div class="lang-bar" style="width:45%"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="reveal">
+  <div class="eyebrow">contact</div>
+  <h2 style="font-size:clamp(24px,3vw,32px);margin-bottom:24px;">INSERT INTO conversations</h2>
+  <div class="schema-block">
+    <div class="schema-row">
+      <div class="schema-key">email</div>
+      <div class="schema-val"><a href="mailto:somaiasalah50@gmail.com" style="color:var(--cyan);">somaiasalah50@gmail.com</a></div>
+    </div>
+    <div class="schema-row">
+      <div class="schema-key">phone</div>
+      <div class="schema-val">+20 115 465 8443</div>
+    </div>
+    <div class="schema-row">
+      <div class="schema-key">location</div>
+      <div class="schema-val">Nasr City, Cairo</div>
+    </div>
+  </div>
+  <div class="contact-links">
+    <a href="mailto:somaiasalah50@gmail.com" class="btn btn-primary">Email Me</a>
+    <a href="#hero" class="btn btn-ghost">Back to Top</a>
+  </div>
+</section>
+
+<footer>
+  Somaia Salah Abdelazim — © 2026. Built with care.
+</footer>
+
+<script>
+  // typing effect for hero query
+  const target = document.getElementById('typedQuery');
+  const parts = [
+    {t:'SELECT', c:'kw'}, {t:' * ', c:''}, {t:'FROM', c:'kw'}, {t:' student ', c:''},
+    {t:'WHERE', c:'kw'}, {t:' name = ', c:''}, {t:"'Somaia Salah'", c:'str'}, {t:';', c:''}
+  ];
+  let full = '';
+  parts.forEach(p => { full += `<span class="${p.c}">${p.t}</span>`; });
+  let i = 0;
+  const plain = parts.map(p=>p.t).join('');
+  function typeStep(){
+    if(i <= plain.length){
+      let built = '';
+      let count = i;
+      for(const p of parts){
+        if(count <= 0) break;
+        const take = Math.min(count, p.t.length);
+        built += `<span class="${p.c}">${p.t.slice(0, take)}</span>`;
+        count -= take;
+      }
+      target.innerHTML = built + '<span class="cursor"></span>';
+      i++;
+      setTimeout(typeStep, 28);
+    }
+  }
+  typeStep();
+
+  // scroll reveal
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
+  }, {threshold:0.15});
+  document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+  // mobile nav toggle
+  const navEl = document.getElementById('nav');
+  document.getElementById('navToggle').addEventListener('click', ()=>{
+    navEl.classList.toggle('open');
+  });
+  navEl.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>navEl.classList.remove('open')));
+</script>
+
+</body>
+</html>
